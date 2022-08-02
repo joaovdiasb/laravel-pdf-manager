@@ -1,0 +1,61 @@
+{
+    "name": "joaovdiasb/laravel-pdf-manager",
+    "description": "Laravel pdf manager package",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+	],
+    "authors": [
+        {
+            "name": "João Victor Dias Bittencourt",
+            "email": "j.v_dias@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable":true,
+    "require": {
+        "php": "^7.4",
+        "barryvdh/laravel-dompdf": "^2.0"
+    },
+    "require-dev": {
+        "illuminate/support": "^8.0",
+        "doctrine/dbal": "^3.0",
+        "mockery/mockery": "^1.0",
+        "nunomaduro/collision": "^4.0",
+        "orchestra/database": "^6.0",
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "9.4",
+        "symfony/thanks": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Joaovdiasb\\LaravelPdfManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Joaovdiasb\\LaravelPdfManager\\Tests\\":"tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/thanks": true
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Joaovdiasb\\LaravelPdfManager\\LaravelPdfManagerServiceProvider"
+            ],
+            "aliases": {
+                "Joaovdiasb": "Joaovdiasb\\LaravelPdfManager\\LaravelPdfManagerFacade"
+            }
+        }
+    }
+}
