@@ -10,7 +10,11 @@ use Illuminate\Support\Str;
 class PdfManager
 {
     private Collection $data;
-    private string $body = '', $fileName = 'document.pdf', $layout = 'laravel-document-manager::defaultLayout';
+    private ?string $fileName = 'document.pdf',
+        $layout = 'laravel-pdf-manager::defaultLayout',
+        $header = null,
+        $footer = null,
+        $body = null;
     private bool $counter = false;
     private int $counterPageX = 0;
     private int $counterPageY = 0;
@@ -22,6 +26,20 @@ class PdfManager
     public function setData(array $data): self
     {
         $this->data = collect($data);
+
+        return $this;
+    }
+
+    public function setHeader(string $header): self
+    {
+        $this->header = $header;
+
+        return $this;
+    }
+
+    public function setFooter(string $footer): self
+    {
+        $this->footer = $footer;
 
         return $this;
     }
@@ -58,8 +76,7 @@ class PdfManager
 
     public function make(string $type = '')
     {
-        $structure = $this->replaces($this->body);
-        $view      = view($this->layout, compact('structure'))->render();
+        $view = $this->getViewContent();
 
         if ($type === self::PDF_DEBUG_VIEW) {
             return $view;
@@ -86,9 +103,8 @@ class PdfManager
 
     public function save(string $path, ?string $disk = null): string
     {
-        $structure = $this->replaces($this->body);
-        $view      = view($this->layout, compact('structure'))->render();
-        $disk      ??= config('filesystems.default');
+        $view = $this->getViewContent();
+        $disk ??= config('filesystems.default');
 
         $pdf  = $this->loadHTML($view);
         $path = (Str::endsWith($path, '/') ? $path : $path . '/') . Str::uuid()->getHex() . '.pdf';
@@ -103,6 +119,15 @@ class PdfManager
         );
 
         return $path;
+    }
+
+    private function getViewContent(): string
+    {
+        $structure = $this->replaces($this->body);
+        $header    = $this->header;
+        $footer    = $this->footer;
+
+        return view($this->layout, compact('structure', 'header', 'footer'))->render();
     }
 
     private function insertPageCounter(\Barryvdh\DomPDF\PDF $pdf): void

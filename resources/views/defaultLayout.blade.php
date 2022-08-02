@@ -9,19 +9,11 @@
         }
         #header {
             position: fixed;
-            left: 0px;
-            top: -95px;
-            padding-top: 10px;
-            right: 0px;
-            height: 150px;
-            text-align: center;
+            {{ config('pdf-manager.header.css') }}
         }
         #footer {
             position: fixed;
-            left: 0px;
-            bottom: -120px;
-            right: 0px;
-            height: 60px;
+            {{ config('pdf-manager.footer.css') }}
         }
         .page_break {
             page-break-before: always;
@@ -40,6 +32,16 @@
     </style>
 </head>
 <body>
+@if (!empty($header))
+    <div id="header">
+        {{ $header }}
+    </div>
+@endif
+@if (!empty($footer))
+    <div id="footer">
+        {{ $footer }}
+    </div>
+@endif
 {!! $structure !!}
 </body>
 </html>
