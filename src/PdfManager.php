@@ -1,9 +1,9 @@
 <?php
 
-namespace Joaovdiasb\LaravelPdfManager\Services;
+namespace Joaovdiasb\LaravelPdfManager;
 
-use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
