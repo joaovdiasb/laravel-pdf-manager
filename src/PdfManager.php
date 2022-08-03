@@ -15,17 +15,17 @@ class PdfManager
         $pageSize = null,
         $pageOrientation = null,
         $pageCounterText = null,
-        $pageCounterFontSize = null,
         $header = null,
         $footer = null,
         $body = null;
     private ?float $marginTop = null,
         $marginBottom = null,
         $marginLeft = null,
-        $marginRight = null;
+        $marginRight = null,
+        $pageCounterX = null,
+        $pageCounterY = null,
+        $pageCounterFontSize = null;
     private bool $pageCounter = false;
-    private ?int $pageCounterX = null,
-        $pageCounterY = null;
     public const PDF_STREAM = 'pdf_stream',
         PDF_DOWNLOAD = 'pdf_download',
         PDF_CONTENT = 'pdf_content',
@@ -100,59 +100,59 @@ class PdfManager
         return $this;
     }
 
-    public function getPageCounterX()
+    public function getPageCounterX(): float
     {
-        return $this->pageCounterX ?? config('pdf-manager.page_counter.x', 10);
+        return (float) ($this->pageCounterX ?? config('pdf-manager.page_counter.x', 10));
     }
 
-    public function getPageCounterY()
+    public function getPageCounterY(): float
     {
-        return $this->pageCounterY ?? config('pdf-manager.page_counter.y', 10);
+        return (float) ($this->pageCounterY ?? config('pdf-manager.page_counter.y', 10));
     }
 
-    public function getPageCounterText()
+    public function getPageCounterText(): string
     {
         return $this->pageCounterText ?? config('pdf-manager.page_counter.text', 'Page {PAGE_NUM} of {PAGE_COUNT}');
     }
 
-    public function getPageCounterFontSize()
+    public function getPageCounterFontSize(): float
     {
-        return $this->pageCounterFontSize ?? config('pdf-manager.page_counter.font_size', 10);
+        return (float) ($this->pageCounterFontSize ?? config('pdf-manager.page_counter.font_size', 10));
     }
 
-    public function getPaperSize()
+    public function getPaperSize(): string
     {
         return $this->pagePaperSize ?? config('pdf-manager.paper.size', 'a4');
     }
 
-    public function getPaperOrientation()
+    public function getPaperOrientation(): string
     {
         return $this->pagePaperSize ?? config('pdf-manager.paper.orientation', 'portrait');
     }
 
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->fileName ?? config('pdf-manager.file_name', 'document.pdf');
     }
 
-    public function getMarginTop()
+    public function getMarginTop(): float
     {
-        return $this->marginTop ?? config('pdf-manager.margin.top', 2);
+        return (float) ($this->marginTop ?? config('pdf-manager.margin.top', 2));
     }
 
-    public function getMarginBottom()
+    public function getMarginBottom(): float
     {
-        return $this->marginBottom ?? config('pdf-manager.margin.bottom', 2);
+        return (float) ($this->marginBottom ?? config('pdf-manager.margin.bottom', 2));
     }
 
-    public function getMarginRight()
+    public function getMarginRight(): float
     {
-        return $this->marginRight ?? config('pdf-manager.margin.right', 1);
+        return (float) ($this->marginRight ?? config('pdf-manager.margin.right', 1));
     }
 
-    public function getMarginLeft()
+    public function getMarginLeft(): float
     {
-        return $this->marginLeft ?? config('pdf-manager.margin.left', 1);
+        return (float) ($this->marginLeft ?? config('pdf-manager.margin.left', 1));
     }
 
     public function make(string $type = null)
