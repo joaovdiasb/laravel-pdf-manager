@@ -16,4 +16,4 @@ example of usage:
                 ->save('documents');
 ```
 
-Output PDF [LINK](https://github.com/joaovdiasb/assets/document-example.pdf)
+Output PDF <a href="https://github.com/joaovdiasb/laravel-pdf-manager/blob/master/assets/document-example.pdf" target="_blank">LINK HERE</a>
