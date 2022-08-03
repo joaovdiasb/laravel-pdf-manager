@@ -10,18 +10,18 @@ use Illuminate\Support\Str;
 class PdfManager
 {
     private Collection $data;
-    private string $fileName = 'document.pdf',
-        $layout = 'laravel-pdf-manager::defaultLayout';
-    private ?string $pageSize = null,
+    private string $layout = 'laravel-pdf-manager::defaultLayout';
+    private ?string $fileName = null,
+        $pageSize = null,
         $pageOrientation = null,
         $pageCounterText = null,
-        $pageCounterSize = null,
+        $pageCounterFontSize = null,
         $header = null,
         $footer = null,
         $body = null;
     private bool $pageCounter = false;
-    private ?int $pageCounterX = null;
-    private ?int $pageCounterY = null;
+    private ?int $pageCounterX = null,
+        $pageCounterY = null;
     public const PDF_STREAM = 'pdf_stream',
         PDF_DOWNLOAD = 'pdf_download',
         PDF_CONTENT = 'pdf_content',
@@ -57,7 +57,7 @@ class PdfManager
 
     public function setFileName(string $fileName): self
     {
-        $this->fileName = $fileName . '.pdf';
+        $this->fileName = $fileName;
 
         return $this;
     }
@@ -86,6 +86,41 @@ class PdfManager
         return $this;
     }
 
+    public function getPageCounterX()
+    {
+        return $this->pageCounterX ?? config('pdf-manager.page_counter.x');
+    }
+
+    public function getPageCounterY()
+    {
+        return $this->pageCounterY ?? config('pdf-manager.page_counter.y');
+    }
+
+    public function getPageCounterText()
+    {
+        return $this->pageCounterText ?? config('pdf-manager.page_counter.text');
+    }
+
+    public function getPageCounterFontSize()
+    {
+        return $this->pageCounterFontSize ?? config('pdf-manager.page_counter.font_size');
+    }
+
+    public function getPaperSize()
+    {
+        return $this->pagePaperSize ?? config('pdf-manager.paper.size');
+    }
+
+    public function getPaperOrientation()
+    {
+        return $this->pagePaperSize ?? config('pdf-manager.paper.orientation');
+    }
+
+    public function getFileName()
+    {
+        return $this->fileName ?? config('pdf-manager.file_name');
+    }
+
     public function make(string $type = null)
     {
         $view = $this->getViewContent();
@@ -98,13 +133,13 @@ class PdfManager
 
         switch ($type) {
             case self::PDF_STREAM:
-                return $pdf->stream($this->fileName);
+                return $pdf->stream($this->getFileName());
                 break;
             case self::PDF_DOWNLOAD:
-                return $pdf->download($this->fileName);
+                return $pdf->download($this->getFileName());
                 break;
             default:
-                return $pdf->stream($this->fileName)->getOriginalContent();
+                return $pdf->stream($this->getFileName())->getOriginalContent();
                 break;
         }
     }
@@ -136,11 +171,11 @@ class PdfManager
         $domPdf = $pdf->getDomPDF();
         $canvas = $domPdf->getCanvas();
         $canvas->page_text(
-            $this->pageCounterX ?? config('pdf-manager.page_counter.x'),
-            $this->pageCounterY ?? config('pdf-manager.page_counter.y'),
-            $this->pageCounterText ?? config('pdf-manager.page_counter.text'),
+            $this->getPageCounterX(),
+            $this->getPageCounterY(),
+            $this->getPageCounterText(),
             null,
-            $this->pageCounterSize ?? config('pdf-manager.page_counter.size'),
+            $this->getPageCounterFontSize(),
             [0, 0, 0]);
     }
 
@@ -148,8 +183,8 @@ class PdfManager
     {
         $pdf = Pdf::loadHTML($view)
                   ->setPaper(
-                      $this->pageSize ?? config('pdf-manager.paper.size'),
-                      $this->pageOrientation ?? config('pdf-manager.paper.orientation')
+                      $this->getPaperSize(),
+                      $this->getPaperOrientation()
                   )
                   ->setWarnings(false);
 

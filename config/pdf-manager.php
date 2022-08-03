@@ -4,6 +4,7 @@ return [
     /**
      * Margin in CM
      */
+    'file_name'         => 'document.pdf',
     'paper'             => [
         'size'        => 'a4',
         'orientation' => 'retrait',
@@ -30,10 +31,10 @@ return [
         ',
     ],
     'page_counter'      => [
-        'x'    => 500,
-        'y'    => 800,
-        'text' => 'Página {PAGE_NUM} de {PAGE_COUNT}',
-        'size' => 10,
+        'x'         => 500,
+        'y'         => 800,
+        'text'      => 'Page {PAGE_NUM} of {PAGE_COUNT}',
+        'font_size' => 10,
     ],
     'aditional_css'     => null,
     'stack_stylesheets' => [],
