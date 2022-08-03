@@ -1,4 +1,9 @@
 # STILL IN DEVELOPMENT
+installation
+
+```bash
+composer require joaovdiasb/laravel-pdf-manager
+```
 
 usage:
 
