@@ -19,6 +19,10 @@ class PdfManager
         $header = null,
         $footer = null,
         $body = null;
+    private ?float $marginTop = null,
+        $marginBottom = null,
+        $marginLeft = null,
+        $marginRight = null;
     private bool $pageCounter = false;
     private ?int $pageCounterX = null,
         $pageCounterY = null;
@@ -44,6 +48,16 @@ class PdfManager
     public function setFooter(string $footer): self
     {
         $this->footer = $footer;
+
+        return $this;
+    }
+
+    public function setMargin(?float $marginTop = null, ?float $marginBottom = null, ?float $marginRight = null, ?float $marginLeft = null): self
+    {
+        $this->marginTop    = $marginTop;
+        $this->marginBottom = $marginBottom;
+        $this->marginLeft   = $marginLeft;
+        $this->marginRight  = $marginRight;
 
         return $this;
     }
@@ -88,37 +102,57 @@ class PdfManager
 
     public function getPageCounterX()
     {
-        return $this->pageCounterX ?? config('pdf-manager.page_counter.x');
+        return $this->pageCounterX ?? config('pdf-manager.page_counter.x', 10);
     }
 
     public function getPageCounterY()
     {
-        return $this->pageCounterY ?? config('pdf-manager.page_counter.y');
+        return $this->pageCounterY ?? config('pdf-manager.page_counter.y', 10);
     }
 
     public function getPageCounterText()
     {
-        return $this->pageCounterText ?? config('pdf-manager.page_counter.text');
+        return $this->pageCounterText ?? config('pdf-manager.page_counter.text', 'Page {PAGE_NUM} of {PAGE_COUNT}');
     }
 
     public function getPageCounterFontSize()
     {
-        return $this->pageCounterFontSize ?? config('pdf-manager.page_counter.font_size');
+        return $this->pageCounterFontSize ?? config('pdf-manager.page_counter.font_size', 10);
     }
 
     public function getPaperSize()
     {
-        return $this->pagePaperSize ?? config('pdf-manager.paper.size');
+        return $this->pagePaperSize ?? config('pdf-manager.paper.size', 'a4');
     }
 
     public function getPaperOrientation()
     {
-        return $this->pagePaperSize ?? config('pdf-manager.paper.orientation');
+        return $this->pagePaperSize ?? config('pdf-manager.paper.orientation', 'portrait');
     }
 
     public function getFileName()
     {
-        return $this->fileName ?? config('pdf-manager.file_name');
+        return $this->fileName ?? config('pdf-manager.file_name', 'document.pdf');
+    }
+
+    public function getMarginTop()
+    {
+        return $this->marginTop ?? config('pdf-manager.margin.top', 2);
+    }
+
+    public function getMarginBottom()
+    {
+        return $this->marginBottom ?? config('pdf-manager.margin.bottom', 2);
+    }
+
+    public function getMarginRight()
+    {
+        return $this->marginRight ?? config('pdf-manager.margin.right', 1);
+    }
+
+    public function getMarginLeft()
+    {
+        return $this->marginLeft ?? config('pdf-manager.margin.left', 1);
     }
 
     public function make(string $type = null)
@@ -158,11 +192,15 @@ class PdfManager
 
     private function getViewContent(): string
     {
-        $structure = $this->replaces($this->body);
-        $header    = $this->header;
-        $footer    = $this->footer;
-
-        return view($this->layout, compact('structure', 'header', 'footer'))->render();
+        return view($this->layout, [
+            'structure'    => $this->replaces($this->body),
+            'header'       => $this->header,
+            'footer'       => $this->footer,
+            'marginTop'    => $this->getMarginTop(),
+            'marginBottom' => $this->getMarginBottom(),
+            'marginRight'  => $this->getMarginRight(),
+            'marginLeft'   => $this->getMarginLeft(),
+        ])->render();
     }
 
     private function insertPageCounter(\Barryvdh\DomPDF\PDF $pdf): void

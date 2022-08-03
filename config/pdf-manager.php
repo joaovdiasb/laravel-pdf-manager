@@ -31,8 +31,8 @@ return [
         ',
     ],
     'page_counter'      => [
-        'x'         => 500,
-        'y'         => 800,
+        'x'         => 10,
+        'y'         => 10,
         'text'      => 'Page {PAGE_NUM} of {PAGE_COUNT}',
         'font_size' => 10,
     ],

@@ -5,10 +5,10 @@
     @endforeach
     <style>
         @page {
-            margin: {{ config('pdf-manager.margin.top', 3) }}cm
-                    {{ config('pdf-manager.margin.right', 1.5) }}cm
-                    {{ config('pdf-manager.margin.bottom', 3) }}cm
-                    {{ config('pdf-manager.margin.left', 1.5) }}cm;
+            margin: {{ $marginTop }}cm
+                    {{ $marginRight }}cm
+                    {{ $marginBottom }}cm
+                    {{ $marginLeft }}cm;
         }
         #header {
             position: fixed;
