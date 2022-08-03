@@ -1,5 +1,8 @@
 <html>
 <head>
+    @foreach (config('pdf-manager.stack_stylesheets') as $stylesheet)
+        <link rel="stylesheet" type="text/css" href="{{ $stylesheet }}">
+    @endforeach
     <style>
         @page {
             margin: {{ config('pdf-manager.margin.top', 3) }}cm

@@ -10,14 +10,18 @@ use Illuminate\Support\Str;
 class PdfManager
 {
     private Collection $data;
-    private ?string $fileName = 'document.pdf',
-        $layout = 'laravel-pdf-manager::defaultLayout',
+    private string $fileName = 'document.pdf',
+        $layout = 'laravel-pdf-manager::defaultLayout';
+    private ?string $pageSize = null,
+        $pageOrientation = null,
+        $pageCounterText = null,
+        $pageCounterSize = null,
         $header = null,
         $footer = null,
         $body = null;
-    private bool $counter = false;
-    private int $counterPageX = 0;
-    private int $counterPageY = 0;
+    private bool $pageCounter = false;
+    private ?int $pageCounterX = null;
+    private ?int $pageCounterY = null;
     public const PDF_STREAM = 'pdf_stream',
         PDF_DOWNLOAD = 'pdf_download',
         PDF_CONTENT = 'pdf_content',
@@ -65,16 +69,24 @@ class PdfManager
         return $this;
     }
 
-    public function setPageCounter(?int $counterPageX = 500, ?int $counterPageY = 800): self
+    public function setPaper(string $pageSize, string $pageOrientation): self
     {
-        $this->counter      = true;
-        $this->counterPageX = $counterPageX;
-        $this->counterPageY = $counterPageY;
+        $this->pageSize        = $pageSize;
+        $this->pageOrientation = $pageOrientation;
 
         return $this;
     }
 
-    public function make(string $type = '')
+    public function setPageCounter(?int $pageCounterX = null, ?int $pageCounterY = null): self
+    {
+        $this->pageCounter  = true;
+        $this->pageCounterX = $pageCounterX;
+        $this->pageCounterY = $pageCounterY;
+
+        return $this;
+    }
+
+    public function make(string $type = null)
     {
         $view = $this->getViewContent();
 
@@ -82,11 +94,7 @@ class PdfManager
             return $view;
         }
 
-        $pdf = $this->loadHTML($view);
-
-        if ($this->counter) {
-            $this->insertPageCounter($pdf);
-        }
+        $pdf = $this->parseView($view);
 
         switch ($type) {
             case self::PDF_STREAM:
@@ -104,19 +112,11 @@ class PdfManager
     public function save(string $path, ?string $disk = null): string
     {
         $view = $this->getViewContent();
+        $pdf  = $this->parseView($view);
         $disk ??= config('filesystems.default');
-
-        $pdf  = $this->loadHTML($view);
         $path = (Str::endsWith($path, '/') ? $path : $path . '/') . Str::uuid()->getHex() . '.pdf';
 
-        if ($this->counter) {
-            $this->insertPageCounter($pdf);
-        }
-
-        Storage::disk($disk)->put(
-            $path,
-            $pdf->stream($this->fileName)->getOriginalContent()
-        );
+        Storage::disk($disk)->put($path, $pdf->output());
 
         return $path;
     }
@@ -135,14 +135,29 @@ class PdfManager
         $pdf->output();
         $domPdf = $pdf->getDomPDF();
         $canvas = $domPdf->getCanvas();
-        $canvas->page_text($this->counterPageX, $this->counterPageY, 'Página {PAGE_NUM} de {PAGE_COUNT}', null, 10, [0, 0, 0]);
+        $canvas->page_text(
+            $this->pageCounterX ?? config('pdf-manager.page_counter.x'),
+            $this->pageCounterY ?? config('pdf-manager.page_counter.y'),
+            $this->pageCounterText ?? config('pdf-manager.page_counter.text'),
+            null,
+            $this->pageCounterSize ?? config('pdf-manager.page_counter.size'),
+            [0, 0, 0]);
     }
 
-    private function loadHTML(string $view): \Barryvdh\DomPDF\PDF
+    private function parseView(string $view): \Barryvdh\DomPDF\PDF
     {
-        return Pdf::loadHTML($view)
-                  ->setPaper('a4', 'retrait')
+        $pdf = Pdf::loadHTML($view)
+                  ->setPaper(
+                      $this->pageSize ?? config('pdf-manager.paper.size'),
+                      $this->pageOrientation ?? config('pdf-manager.paper.orientation')
+                  )
                   ->setWarnings(false);
+
+        if ($this->pageCounter) {
+            $this->insertPageCounter($pdf);
+        }
+
+        return $pdf;
     }
 
     private function replaces(?string $text): ?string
