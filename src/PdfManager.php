@@ -31,6 +31,11 @@ class PdfManager
         PDF_CONTENT = 'pdf_content',
         PDF_DEBUG_VIEW = 'debug_view';
 
+    public function __construct()
+    {
+        $this->data = collect();
+    }
+
     public function setData(array $data): self
     {
         $this->data = collect($data);
@@ -96,6 +101,13 @@ class PdfManager
         $this->pageCounter  = true;
         $this->pageCounterX = $pageCounterX;
         $this->pageCounterY = $pageCounterY;
+
+        return $this;
+    }
+
+    public function setPageCounterText(?string $pageCounterText = null): self
+    {
+        $this->pageCounterText = $pageCounterText;
 
         return $this;
     }
