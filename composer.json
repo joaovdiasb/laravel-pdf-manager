@@ -4,6 +4,10 @@
     "type": "library",
     "license": "MIT",
     "keywords": [
+        "laravel-pdf-manager",
+        "laravel pdf",
+        "dompdf",
+        "pdf service"
 	],
     "authors": [
         {
@@ -19,7 +23,6 @@
     },
     "require-dev": {
         "illuminate/support": "^8.0",
-        "doctrine/dbal": "^3.0",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^4.0",
         "orchestra/database": "^6.0",
