@@ -25,7 +25,8 @@ class PdfManager
         $pageCounterX = null,
         $pageCounterY = null,
         $pageCounterFontSize = null;
-    private bool $pageCounter = false;
+    private bool $pageCounter = false,
+        $pageCounterCentered = false;
     public const PDF_STREAM = 'pdf_stream',
         PDF_DOWNLOAD = 'pdf_download',
         PDF_CONTENT = 'pdf_content',
@@ -96,11 +97,30 @@ class PdfManager
         return $this;
     }
 
-    public function setPageCounter(?int $pageCounterX = null, ?int $pageCounterY = null): self
+    public function setPageCounter(): self
     {
-        $this->pageCounter  = true;
+        $this->pageCounter = true;
+
+        return $this;
+    }
+
+    public function setPageCounterX(float $pageCounterX): self
+    {
         $this->pageCounterX = $pageCounterX;
+
+        return $this;
+    }
+
+    public function setPageCounterY(float $pageCounterY): self
+    {
         $this->pageCounterY = $pageCounterY;
+
+        return $this;
+    }
+
+    public function setPageCounterCentered(): self
+    {
+        $this->pageCounterCentered = true;
 
         return $this;
     }
@@ -218,8 +238,14 @@ class PdfManager
     private function insertPageCounter(\Barryvdh\DomPDF\PDF $pdf): void
     {
         $pdf->output();
-        $domPdf = $pdf->getDomPDF();
-        $canvas = $domPdf->getCanvas();
+        $domPdf      = $pdf->getDomPDF();
+        $canvas      = $domPdf->getCanvas();
+        $fontMetrics = $canvas->get_dompdf()->getFontMetrics();
+
+        if ($this->pageCounterCentered) {
+            $this->pageCounterCentered($pdf, $fontMetrics, $canvas->get_width());
+        }
+
         $canvas->page_text(
             $this->getPageCounterX(),
             $this->getPageCounterY(),
@@ -227,6 +253,17 @@ class PdfManager
             null,
             $this->getPageCounterFontSize(),
             [0, 0, 0]);
+    }
+
+    private function pageCounterCentered(\Barryvdh\DomPDF\PDF $pdf, \Dompdf\FontMetrics $fontMetrics, float $pdfWidth): void
+    {
+        $textWidth = $fontMetrics->getTextWidth(
+            str_replace(['{PAGE_COUNT}', '{PAGE_NUM}'], '', $this->getPageCounterText()),
+            null,
+            $this->getPageCounterFontSize()
+        );
+
+        $this->pageCounterX = ($pdfWidth - $textWidth) / 2;
     }
 
     private function parseView(string $view): \Barryvdh\DomPDF\PDF
