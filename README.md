@@ -8,7 +8,7 @@
 
 Install via composer
 ```bash
-composer require joaovdiasb/laravel-multi-tenancy
+composer require joaovdiasb/laravel-pdf-manager
 ```
 
 ## Configuration
