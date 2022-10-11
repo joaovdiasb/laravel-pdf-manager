@@ -25,7 +25,7 @@ php artisan vendor:publish --provider="Joaovdiasb\LaravelPdfManager\LaravelPdfMa
                 ->setFooter('DOCUMENT FOOTER')
                 ->setBody(str_repeat('<u>[NAME]</u><br />', 100))
                 ->setData(['[NAME]' => 'Jhon Doe'])
-                ->setPageCounter(10, 10)
+                ->setPageCounter()
                 ->save('documents');
 ```
 
