@@ -17,7 +17,9 @@ class PdfManager
         $pageCounterText = null,
         $header = null,
         $footer = null,
-        $body = null;
+        $body = null,
+        $headerCss = null,
+        $footerCss = null;
     private ?float $marginTop = null,
         $marginBottom = null,
         $marginLeft = null,
@@ -132,6 +134,30 @@ class PdfManager
         return $this;
     }
 
+    public function setHeaderCss(string $headerCss): self
+    {
+        $this->headerCss = $headerCss;
+
+        return $this;
+    }
+
+    public function setFooterCss(string $footerCss): self
+    {
+        $this->footerCss = $footerCss;
+
+        return $this;
+    }
+
+    public function getHeaderCss(): string
+    {
+        return $this->headerCss ?? config('pdf-manager.header.css');
+    }
+
+    public function getFooterCss(): string
+    {
+        return $this->footerCss ?? config('pdf-manager.footer.css');
+    }
+
     public function getPageCounterX(): float
     {
         return (float) ($this->pageCounterX ?? config('pdf-manager.page_counter.x', 10));
@@ -210,7 +236,7 @@ class PdfManager
         }
     }
 
-    public function save(string $path, ?string $disk = null): string
+    public function save(?string $path = null, ?string $disk = null): string
     {
         $view = $this->getViewContent();
         $pdf  = $this->parseView($view);
@@ -227,7 +253,9 @@ class PdfManager
         return view($this->layout, [
             'structure'    => $this->replaces($this->body),
             'header'       => $this->header,
+            'headerCss'    => $this->getHeaderCss(),
             'footer'       => $this->footer,
+            'footerCss'    => $this->getFooterCss(),
             'marginTop'    => $this->getMarginTop(),
             'marginBottom' => $this->getMarginBottom(),
             'marginRight'  => $this->getMarginRight(),

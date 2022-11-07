@@ -12,11 +12,11 @@
         }
         #header {
             position: fixed;
-            {{ config('pdf-manager.header.css') }}
+            {{ $headerCss }}
         }
         #footer {
             position: fixed;
-            {{ config('pdf-manager.footer.css') }}
+            {{ $footerCss }}
         }
         .page_break {
             page-break-before: always;
