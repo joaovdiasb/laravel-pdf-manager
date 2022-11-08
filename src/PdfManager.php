@@ -252,9 +252,9 @@ class PdfManager
     {
         return view($this->layout, [
             'structure'    => $this->replaces($this->body),
-            'header'       => $this->header,
+            'header'       => $this->replaces($this->header),
             'headerCss'    => $this->getHeaderCss(),
-            'footer'       => $this->footer,
+            'footer'       => $this->replaces($this->footer),
             'footerCss'    => $this->getFooterCss(),
             'marginTop'    => $this->getMarginTop(),
             'marginBottom' => $this->getMarginBottom(),
