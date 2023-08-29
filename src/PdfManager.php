@@ -180,12 +180,12 @@ class PdfManager
 
     public function getPaperSize(): string
     {
-        return $this->pagePaperSize ?? config('pdf-manager.paper.size', 'a4');
+        return $this->pageSize ?? config('pdf-manager.paper.size', 'a4');
     }
 
     public function getPaperOrientation(): string
     {
-        return $this->pagePaperSize ?? config('pdf-manager.paper.orientation', 'portrait');
+        return $this->pageOrientation ?? config('pdf-manager.paper.orientation', 'portrait');
     }
 
     public function getFileName(): string
