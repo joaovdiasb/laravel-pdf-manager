@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PdfManager
 {
@@ -33,6 +34,7 @@ class PdfManager
         PDF_DOWNLOAD = 'pdf_download',
         PDF_CONTENT = 'pdf_content',
         PDF_DEBUG_VIEW = 'debug_view';
+    private ?\Closure $mutateContentBeforeLoadHtml = null;
 
     public function __construct()
     {
@@ -213,6 +215,9 @@ class PdfManager
         return (float) ($this->marginLeft ?? config('pdf-manager.margin.left', 1));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function make(string $type = null)
     {
         $view = $this->getViewContent();
@@ -221,7 +226,7 @@ class PdfManager
             return $view;
         }
 
-        $pdf = $this->parseView($view);
+        $pdf = $this->parseView();
 
         switch ($type) {
             case self::PDF_STREAM:
@@ -236,10 +241,12 @@ class PdfManager
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function save(?string $path = null, ?string $disk = null): string
     {
-        $view = $this->getViewContent();
-        $pdf  = $this->parseView($view);
+        $pdf  = $this->parseView();
         $disk ??= config('filesystems.default');
         $path = (Str::endsWith($path, '/') ? $path : $path . '/') . Str::uuid()->getHex() . '.pdf';
 
@@ -248,6 +255,9 @@ class PdfManager
         return $path;
     }
 
+    /**
+     * @throws Throwable
+     */
     private function getViewContent(): string
     {
         return view($this->layout, [
@@ -294,8 +304,17 @@ class PdfManager
         $this->pageCounterX = ($pdfWidth - $textWidth) / 2;
     }
 
-    private function parseView(string $view): \Barryvdh\DomPDF\PDF
+    /**
+     * @throws Throwable
+     */
+    private function parseView(): \Barryvdh\DomPDF\PDF
     {
+        $mutateContentBeforeLoadHtml = $this->mutateContentBeforeLoadHtml;
+
+        $view = $this->mutateContentBeforeLoadHtml instanceof \Closure
+            ? $mutateContentBeforeLoadHtml($this->getViewContent())
+            : $this->getViewContent();
+
         $pdf = Pdf::loadHTML($view)
                   ->setPaper(
                       $this->getPaperSize(),
@@ -317,5 +336,12 @@ class PdfManager
             $this->data->values()->toArray(),
             $text ?? ''
         );
+    }
+
+    public function setMutateContentBeforeLoadHtml(\Closure $callback): PdfManager
+    {
+        $this->mutateContentBeforeLoadHtml = $callback;
+
+        return $this;
     }
 }
